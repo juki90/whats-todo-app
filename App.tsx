@@ -1,19 +1,21 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { Platform, StatusBar, View, SafeAreaView } from "react-native";
+import Root from "./views/Root";
+import { theme } from "./styles/theme";
+import styled from "styled-components/native";
+
+const SafeAreaViewStyled = styled(SafeAreaView)`
+  flex: 1;
+  background-color: ${theme.background_default};
+  margin-top: ${Platform.OS === "android"
+    ? Math.floor(StatusBar.currentHeight)
+    : 0}px;
+`;
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-    </View>
+    <SafeAreaViewStyled>
+      <Root />
+    </SafeAreaViewStyled>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
