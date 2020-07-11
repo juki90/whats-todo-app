@@ -9,12 +9,9 @@ import {
 } from "react-native";
 import styled from "styled-components/native";
 import { theme } from "../styles/theme";
-import { logo } from "../assets/images";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
-import { Actions } from "react-native-router-flux";
 import ActionButton from "./../components/ActionButton";
-import ButtonGroup from "../templates/ButtonGroup";
 import { useBack } from "../hooks/useBack";
 
 const fetchFonts = () => {
@@ -35,7 +32,7 @@ const HeaderStyled = styled(Text)`
   text-align: center;
   font-size: 60px;
   font-family: do-hyeon;
-  color: ${theme.header_color_primary};
+  color: ${theme.button_color_tertiary};
   margin: 25px auto 0 auto;
   padding: 0 15px;
 `;
@@ -47,11 +44,19 @@ const SubheaderStyled = styled(Text)`
   text-align: center;
 `;
 
+const ButtonGroup = styled(View)`
+  flex: 1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+`;
+
 const Board = styled(View)`
   background-color: ${theme.background_board};
 `;
 
-const Dashboard: React.FC = () => {
+const CreateTask: React.FC = () => {
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
   useBack();
 
@@ -66,12 +71,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <ScrollViewStyled contentContainerStyle={{ alignItems: "center" }}>
-      <HeaderStyled>DASHBOARD</HeaderStyled>
-      <SubheaderStyled>Create, organize and execute your tasks</SubheaderStyled>
+      <HeaderStyled>CREATE TASK</HeaderStyled>
+      <SubheaderStyled>Create a new task of any type</SubheaderStyled>
       <ButtonGroup />
       <Board></Board>
     </ScrollViewStyled>
   );
 };
 
-export default Dashboard;
+export default CreateTask;

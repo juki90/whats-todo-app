@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "androidNavigationBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#2c3e50"
+    }
+  }
+}

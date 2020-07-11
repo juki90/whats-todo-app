@@ -6,6 +6,7 @@ import { logo } from "../assets/images";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
 import { Actions } from "react-native-router-flux";
+import { useBack } from "../hooks/useBack";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -66,6 +67,7 @@ const TextStyled = styled(Text)`
 
 const Home: React.FC = () => {
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+  useBack();
 
   if (!dataLoaded) {
     return (

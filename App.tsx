@@ -12,6 +12,9 @@ const SafeAreaViewStyled = styled(SafeAreaView)`
     : 0}px;
 `;
 
+StatusBar.setBackgroundColor(theme.background_default);
+StatusBar.setBarStyle("light-content");
+
 export default function App() {
   return (
     <SafeAreaViewStyled>
