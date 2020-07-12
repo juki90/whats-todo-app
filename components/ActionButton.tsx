@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { TouchableOpacity, TouchableOpacityProps } from "react-native";
+import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { Text } from "react-native";
 import { darken } from "polished";
 import { theme } from "../styles/theme";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
-import { Actions } from "react-native-router-flux";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -17,16 +16,17 @@ const fetchFonts = () => {
 const TouchableOpacityStyled = styled(TouchableOpacity)<any>`
   background-color: ${({ color }) => darken(0.33, color)};
   border-color: ${({ color }) => color};
-  border-width: 1px;
+  border-width: 2px;
   border-style: solid;
   border-radius: 3px;
-  padding: 3px 15px;
+  padding: 7px 15px;
   margin: 5px;
   min-width: 140px;
 `;
 
 const TextStyled = styled(Text)<any>`
   font-size: ${parseInt(theme.fontSize_default) + 2}px;
+  font-family: "do-hyeon";
   color: ${({ color }) => color};
   text-align: center;
 `;

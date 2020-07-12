@@ -11,8 +11,8 @@ import styled from "styled-components/native";
 import { theme } from "../styles/theme";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
-import ActionButton from "./../components/ActionButton";
 import { useBack } from "../hooks/useBack";
+import TaskForm from "../components/TaskForm";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -73,8 +73,7 @@ const CreateTask: React.FC = () => {
     <ScrollViewStyled contentContainerStyle={{ alignItems: "center" }}>
       <HeaderStyled>CREATE TASK</HeaderStyled>
       <SubheaderStyled>Create a new task of any type</SubheaderStyled>
-      <ButtonGroup />
-      <Board></Board>
+      <TaskForm />
     </ScrollViewStyled>
   );
 };

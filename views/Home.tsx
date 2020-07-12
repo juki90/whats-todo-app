@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Image, Text, Button, TouchableOpacity } from "react-native";
+import { View, Image, Text, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { theme } from "../styles/theme";
 import { logo } from "../assets/images";
