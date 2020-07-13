@@ -22,6 +22,7 @@ const fetchFonts = () => {
 
 const ScrollViewStyled = styled(ScrollView)`
   flex: 1;
+  flex-grow: 1;
   background-color: ${theme.background_default};
   padding: 10px;
   flex-direction: column;

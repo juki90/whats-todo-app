@@ -15,8 +15,8 @@ const BtnGroup = styled(View)`
 
 const ButtonGroup: React.FC = () => (
   <BtnGroup>
-    <ActionButton color={theme.button_color_secondary} title="Past tasks" />
-    <ActionButton color={theme.button_color_secondary} title="Future tasks" />
+    <ActionButton color={theme.button_color_secondary} title="History tasks" />
+    <ActionButton color={theme.button_color_secondary} title="Schedule tasks" />
     <ActionButton color={theme.button_color_primary} title="Saved tasks" />
     <ActionButton
       onPress={() => Actions.createTask()}

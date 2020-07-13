@@ -35,12 +35,14 @@ interface ActionButtonProps {
   color: string;
   title: string;
   onPress?: () => void;
+  style?: any;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({
   title,
   onPress,
   color,
+  style,
 }) => {
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
 
@@ -54,7 +56,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   }
 
   return (
-    <TouchableOpacityStyled color={color} onPress={onPress}>
+    <TouchableOpacityStyled color={color} onPress={onPress} style={style}>
       <TextStyled color={color}>{title}</TextStyled>
     </TouchableOpacityStyled>
   );
