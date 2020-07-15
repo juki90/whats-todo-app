@@ -10,8 +10,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import CheckBox from "@react-native-community/checkbox";
-import styled from "styled-components/native";
 import { Dimensions } from "react-native";
+import styled from "styled-components/native";
 import RNPickerSelect from "react-native-picker-select";
 import Icon from "react-native-vector-icons/AntDesign";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -48,6 +48,28 @@ const TextInputStyled = styled(TextInput)`
 const TextInputBtnStyled = styled(TextInputStyled)`
   width: ${Dimensions.get("window").width - 35}px;
   flex-grow: 5;
+`;
+
+const Description = styled(Text)`
+  color: ${theme.color_default};
+  font-size: ${parseInt(theme.fontSize_default) + 4}px;
+  margin: 20px 15px;
+  text-align: center;
+`;
+
+const Circle = styled(View)`
+  border: 2px solid ${theme.button_color_primary};
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+`;
+
+const Radio = styled(TouchableOpacity)`
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  margin: 5px 10px;
 `;
 
 const pickerSelectStyles = StyleSheet.create({
@@ -96,11 +118,13 @@ const TaskForm = () => {
     <Formik
       initialValues={{
         name: "",
-        type: "",
+        type: "simple",
         important: false,
         date: "",
         time: "",
+        optName: "",
         optional: [],
+        regular: 0,
       }}
       onSubmit={(values) => console.log(values)}
     >
@@ -116,8 +140,8 @@ const TaskForm = () => {
           <RNPickerSelect
             onValueChange={handleChange("type")}
             placeholder={{
-              label: "Select task type",
-              value: "",
+              label: "Simple",
+              value: "simple",
             }}
             Icon={() => (
               <Icon
@@ -128,7 +152,6 @@ const TaskForm = () => {
             )}
             style={pickerSelectStyles}
             items={[
-              { label: "Simple", value: "simple" },
               { label: "With optional tasks", value: "with-optional" },
               { label: "With timer", value: "with-timer" },
             ]}
@@ -215,6 +238,58 @@ const TaskForm = () => {
               </View>
             </>
           )}
+          {values.type !== "with-timer" && (
+            <>
+              <Label>Is this task regular?</Label>
+              <Radio onPress={() => setFieldValue("regular", 0)}>
+                <Circle
+                  style={{
+                    backgroundColor:
+                      values.regular === 0
+                        ? theme.button_color_primary
+                        : "transparent",
+                  }}
+                ></Circle>
+                <SmallLabel>No</SmallLabel>
+              </Radio>
+              <Radio onPress={() => setFieldValue("regular", 1)}>
+                <Circle
+                  style={{
+                    backgroundColor:
+                      values.regular === 1
+                        ? theme.button_color_primary
+                        : "transparent",
+                  }}
+                ></Circle>
+                <SmallLabel>Every 1 day</SmallLabel>
+              </Radio>
+              <Radio onPress={() => setFieldValue("regular", 7)}>
+                <Circle
+                  style={{
+                    backgroundColor:
+                      values.regular === 7
+                        ? theme.button_color_primary
+                        : "transparent",
+                  }}
+                ></Circle>
+                <SmallLabel>Every 1 week</SmallLabel>
+              </Radio>
+              <Radio
+                onPress={() => setFieldValue("regular", 30)}
+                style={{ marginBottom: 15 }}
+              >
+                <Circle
+                  style={{
+                    backgroundColor:
+                      values.regular === 30
+                        ? theme.button_color_primary
+                        : "transparent",
+                  }}
+                ></Circle>
+                <SmallLabel>Every 1 month</SmallLabel>
+              </Radio>
+            </>
+          )}
           {values.type === "with-optional" && (
             <>
               <Label>Add optional tasks for this task</Label>
@@ -225,12 +300,21 @@ const TaskForm = () => {
                   alignItems: "center",
                 }}
               >
-                <TextInputBtnStyled />
+                <TextInputBtnStyled
+                  onChangeText={handleChange("optName")}
+                  onBlur={handleBlur("optName")}
+                />
                 <TouchableOpacity
                   style={{
                     flex: 1,
                     height: 50,
                   }}
+                  onPress={() =>
+                    setFieldValue("optional", [
+                      ...values.optional,
+                      { name: values.optName, id: values.optional.length },
+                    ])
+                  }
                 >
                   <Icon
                     name="plussquare"
@@ -239,13 +323,26 @@ const TaskForm = () => {
                   />
                 </TouchableOpacity>
               </View>
-              <View>
-                <OptionalTask id={0} title="Optional task #1" />
-                <OptionalTask id={1} title="Optional task #2" />
-                <OptionalTask id={2} title="Optional task #3" />
-                <OptionalTask id={3} title="Optional task #4" />
-                <OptionalTask id={4} title="Optional task #5" />
+              <View style={{ flex: 1 }}>
+                {!!values.optional.length &&
+                  values.optional.map((o) => (
+                    <OptionalTask
+                      key={`optT-${o.id}`}
+                      id={o.id}
+                      onDelete={setFieldValue}
+                      name={o.name}
+                      values={values.optional}
+                    />
+                  ))}
               </View>
+            </>
+          )}
+          {values.type === "with-timer" && (
+            <>
+              <Description>
+                This task starts immediately and is added to your history when
+                finished
+              </Description>
             </>
           )}
           <Icon
@@ -258,16 +355,27 @@ const TaskForm = () => {
               marginRight: "auto",
             }}
           />
-          <ActionButton
-            color={theme.button_color_tertiary}
-            title={"Add to schedule"}
-            onPress={handleSubmit}
-          />
-          <ActionButton
-            color={theme.button_color_primary}
-            title={"Add to saved"}
-            onPress={handleSubmit}
-          />
+          {values.type !== "with-timer" && (
+            <>
+              <ActionButton
+                color={theme.button_color_tertiary}
+                title={"Add to schedule"}
+                onPress={handleSubmit}
+              />
+              <ActionButton
+                color={theme.button_color_primary}
+                title={"Add to saved"}
+                onPress={handleSubmit}
+              />
+            </>
+          )}
+          {values.type === "with-timer" && (
+            <ActionButton
+              color={theme.button_color_tertiary}
+              title={"Start task"}
+              onPress={handleSubmit}
+            />
+          )}
         </ViewStyled>
       )}
     </Formik>

@@ -8,7 +8,7 @@ import CreateTask from "./CreateTask";
 const Root: React.FC = () => {
   return (
     <Router>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView keyboardShouldPersistTaps={"always"} style={{ flex: 1 }}>
         <Scene key="root" hideNavBar>
           <Scene key="home" initial={true} component={Home} />
           <Scene key="dashboard" initial={true} component={Dashboard} />

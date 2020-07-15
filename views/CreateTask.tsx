@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Image,
-  Text,
-  Button,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import styled from "styled-components/native";
 import { theme } from "../styles/theme";
 import * as Font from "expo-font";
@@ -43,18 +36,6 @@ const SubheaderStyled = styled(Text)`
   font-size: ${parseInt(theme.fontSize_default) + 4}px;
   margin: 20px 15px;
   text-align: center;
-`;
-
-const ButtonGroup = styled(View)`
-  flex: 1;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Board = styled(View)`
-  background-color: ${theme.background_board};
 `;
 
 const CreateTask: React.FC = () => {
