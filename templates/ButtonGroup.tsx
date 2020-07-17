@@ -16,7 +16,11 @@ const BtnGroup = styled(View)`
 const ButtonGroup: React.FC = () => (
   <BtnGroup>
     <ActionButton color={theme.button_color_secondary} title="History tasks" />
-    <ActionButton color={theme.button_color_secondary} title="Schedule tasks" />
+    <ActionButton
+      onPress={() => Actions.schedule()}
+      color={theme.button_color_secondary}
+      title="Schedule tasks"
+    />
     <ActionButton color={theme.button_color_primary} title="Saved tasks" />
     <ActionButton
       onPress={() => Actions.createTask()}

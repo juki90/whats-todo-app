@@ -16,6 +16,8 @@ import RNPickerSelect from "react-native-picker-select";
 import Icon from "react-native-vector-icons/AntDesign";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import OptionalTask from "./OptionalTask";
+import { connect } from "react-redux";
+import { addTaskSchedule as addTaskScheduleAction } from "../actions";
 
 const ViewStyled = styled(View)`
   flex: 1;
@@ -72,6 +74,13 @@ const Radio = styled(TouchableOpacity)`
   margin: 5px 10px;
 `;
 
+const Error = styled(Text)`
+  flex: 1;
+  font-size: ${theme.fontSize_default};
+  color: #f55;
+  margin: 0 15px 10px 15px;
+`;
+
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     flex: 1,
@@ -110,9 +119,42 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-const TaskForm = () => {
+interface TaskFormProps {
+  addTaskSchedule: (task: Task) => void;
+  schedule: Task[];
+}
+
+const TaskForm: React.FC<TaskFormProps> = ({ addTaskSchedule, schedule }) => {
   const [datePickerVisible, setDatePickerVisible] = useState<boolean>(false);
   const [timePickerVisible, setTimePickerVisible] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{
+    name: string;
+    date: string;
+    optional: string;
+  }>({ name: "", date: "", optional: "" });
+
+  const handleAddTask: (task: Task) => void = (task) => {
+    const fullDate = new Date(
+      task.date.setHours(task.time.getHours())
+    ).setMinutes(task.time.getMinutes());
+
+    if (!task.name) {
+      setErrors({ ...errors, name: "Add task name before adding" });
+    }
+    if (
+      task.type !== "timer" &&
+      new Date(fullDate).getTime() < new Date().getTime()
+    ) {
+      setErrors({
+        ...errors,
+        date: "Date of the task must start in the future",
+      });
+    }
+    if (task.type === "simple") {
+      addTaskSchedule(task);
+      return;
+    }
+  };
 
   return (
     <Formik
@@ -120,15 +162,16 @@ const TaskForm = () => {
         name: "",
         type: "simple",
         important: false,
-        date: "",
-        time: "",
+        date: new Date(),
+        time: new Date(),
         optName: "",
         optional: [],
         regular: 0,
+        minutes: "",
       }}
       onSubmit={(values) => console.log(values)}
     >
-      {({ handleChange, handleBlur, handleSubmit, setFieldValue, values }) => (
+      {({ handleChange, handleBlur, setFieldValue, values }) => (
         <ViewStyled>
           <Label>Task name</Label>
           <TextInputStyled
@@ -168,8 +211,9 @@ const TaskForm = () => {
                     : `${new Date(values.date)
                         .getDate()
                         .toString()
-                        .padStart(2, "0")}/${new Date(values.date)
-                        .getMonth()
+                        .padStart(2, "0")}/${(
+                        new Date(values.date).getMonth() + 1
+                      )
                         .toString()
                         .padStart(2, "0")}/${new Date(
                         values.date
@@ -199,6 +243,7 @@ const TaskForm = () => {
                   onConfirm={(d) => {
                     setDatePickerVisible(false);
                     setFieldValue("date", d);
+                    setErrors({ ...errors, date: "" });
                   }}
                   onCancel={() => setDatePickerVisible(false)}
                 />
@@ -210,6 +255,7 @@ const TaskForm = () => {
                   onConfirm={(t) => {
                     setTimePickerVisible(false);
                     setFieldValue("time", t);
+                    setErrors({ ...errors, date: "" });
                   }}
                   onCancel={() => setTimePickerVisible(false)}
                 />
@@ -309,12 +355,20 @@ const TaskForm = () => {
                     flex: 1,
                     height: 50,
                   }}
-                  onPress={() =>
-                    setFieldValue("optional", [
-                      ...values.optional,
-                      { name: values.optName, id: values.optional.length },
-                    ])
-                  }
+                  onPress={() => {
+                    if (values.optName.length > 0) {
+                      setFieldValue("optional", [
+                        ...values.optional,
+                        { name: values.optName, id: values.optional.length },
+                      ]);
+                      setErrors({ ...errors, optional: "" });
+                      return;
+                    }
+                    setErrors({
+                      ...errors,
+                      optional: "Give a name for next optional task",
+                    });
+                  }}
                 >
                   <Icon
                     name="plussquare"
@@ -323,6 +377,7 @@ const TaskForm = () => {
                   />
                 </TouchableOpacity>
               </View>
+              {errors.optional.length > 0 && <Error>{errors.optional}</Error>}
               <View style={{ flex: 1 }}>
                 {!!values.optional.length &&
                   values.optional.map((o) => (
@@ -343,6 +398,13 @@ const TaskForm = () => {
                 This task starts immediately and is added to your history when
                 finished
               </Description>
+              <Label>Set timer in minutes</Label>
+              <TextInputStyled
+                onChangeText={handleChange("minutes")}
+                onBlur={handleBlur("minutes")}
+                value={values.minutes}
+                keyboardType="numeric"
+              />
             </>
           )}
           <Icon
@@ -355,17 +417,29 @@ const TaskForm = () => {
               marginRight: "auto",
             }}
           />
+          {errors.name.length > 0 && <Error>{errors.name}</Error>}
+          {errors.date.length > 0 && <Error>{errors.date}</Error>}
           {values.type !== "with-timer" && (
             <>
               <ActionButton
                 color={theme.button_color_tertiary}
                 title={"Add to schedule"}
-                onPress={handleSubmit}
+                onPress={() =>
+                  handleAddTask({
+                    id: schedule.length,
+                    name: values.name,
+                    date: values.date,
+                    time: values.time,
+                    type: values.type,
+                    important: values.important,
+                    regular: values.regular,
+                  })
+                }
               />
               <ActionButton
                 color={theme.button_color_primary}
-                title={"Add to saved"}
-                onPress={handleSubmit}
+                title="Add to saved"
+                onPress={() => {}}
               />
             </>
           )}
@@ -373,7 +447,7 @@ const TaskForm = () => {
             <ActionButton
               color={theme.button_color_tertiary}
               title={"Start task"}
-              onPress={handleSubmit}
+              onPress={() => {}}
             />
           )}
         </ViewStyled>
@@ -382,4 +456,15 @@ const TaskForm = () => {
   );
 };
 
-export default TaskForm;
+const mapStateToProps = (state) => {
+  const { schedule } = state;
+  return {
+    schedule,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  addTaskSchedule: (task: Task) => dispatch(addTaskScheduleAction(task)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TaskForm);

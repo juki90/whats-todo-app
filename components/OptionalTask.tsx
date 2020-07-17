@@ -19,6 +19,7 @@ const ViewStyled = styled(View)`
 const TextStyled = styled(Text)`
   font-size: ${theme.fontSize_default};
   color: ${theme.button_color_secondary};
+  padding: 5px;
   width: 80%;
 `;
 
